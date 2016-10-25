@@ -257,8 +257,7 @@ function exposify_settings_updated($old_settings, $new_settings)
 
 /**
  * Remove the properties page from the overview.
- * @param  [type] $query [description]
- * @return [type]        [description]
+ * @param  WP_Query $query
  */
 function exposify_remove_page_from_overview($query)
 {
@@ -269,7 +268,7 @@ function exposify_remove_page_from_overview($query)
   }
 }
 
-add_filter('parse_query', 'exposify_remove_page_from_overview');
+add_action('parse_query', 'exposify_remove_page_from_overview');
 add_action('admin_menu', 'exposify_add_options_page');
 add_action('admin_init', 'exposify_init_settings');
 add_action('update_option_exposify_settings', 'exposify_settings_updated', 10, 2);
