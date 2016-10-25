@@ -130,6 +130,11 @@ function exposify_get_css()
   }
 }
 
+/**
+ * Alter the template of the properties page.
+ * @param  String $template
+ * @return String
+ */
 function exposify_change_page_template($template)
 {
   if (get_the_ID() == get_option('exposify_properties_page_id')) {
