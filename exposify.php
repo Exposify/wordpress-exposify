@@ -74,5 +74,8 @@ register_deactivation_hook(__FILE__, 'exposify_deactivate_plugin');
 
 add_action('init', 'exposify_rewrite');
 
-require(__DIR__ . '/admin.php');
+if (is_admin()) {
+  require(__DIR__ . '/admin.php');
+}
+
 require(__DIR__ . '/public.php');
