@@ -162,9 +162,12 @@ function exposify_theme_template_render()
   $options = get_option('exposify_settings');
   ?>
   <select name="exposify_settings[exposify_theme_template]">
-    <?php foreach(wp_get_theme()->get_page_templates() as $path => $name) {
+    <?php
+    echo '<option value="default" ' . ($options['exposify_theme_template'] == 'default' ? 'selected' : '') . '>Default</option>';
+    foreach(wp_get_theme()->get_page_templates() as $path => $name) {
       echo '<option value="' . $path . '" ' . ($options['exposify_theme_template'] == $path ? 'selected' : '') . '>' . $name . '</option>';
-    } ?>
+    }
+    ?>
   </select>
   <?php
 }

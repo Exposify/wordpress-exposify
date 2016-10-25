@@ -133,8 +133,12 @@ function exposify_get_css()
 function exposify_change_page_template($template)
 {
   if (get_the_ID() == get_option('exposify_properties_page_id')) {
-    $template = get_option('exposify_settings')['exposify_theme_template'];
-    return get_template_directory() . '/' . $template;
+    $new_template = get_option('exposify_settings')['exposify_theme_template'];
+    if (locate_template($new_template) != '' && $new_template != 'default') {
+      return get_template_directory() . '/' . $new_template;
+    } else {
+      return $template;
+    }
   }
   return $template;
 }
