@@ -13,7 +13,7 @@ function exposify_add_options_page()
  */
 function exposify_init_settings()
 {
-  register_setting('exposify_settings', 'exposify_settings');
+  register_setting('exposify_settings', 'exposify_settings', 'exposify_sanitize_settings');
 
   // register general section and fields
   add_settings_section(
@@ -94,6 +94,22 @@ function exposify_init_settings()
     'exposify_settings',
     'exposify_visual_section'
   );
+}
+
+/**
+ * Sanitize settings which aren't used as template.
+ * @param  Array $option
+ * @return Array
+ */
+function exposify_sanitize_settings($option)
+{
+  $option['exposify_api_url']        = sanitize_text_field($option['exposify_api_url']);
+  $option['exposify_api_key']        = sanitize_text_field($option['exposify_api_key']);
+  $option['exposify_site_title']     = sanitize_text_field($option['exposify_site_title']);
+  $option['exposify_site_slug']      = sanitize_text_field($option['exposify_site_slug']);
+  $option['exposify_theme_template'] = sanitize_text_field($option['exposify_theme_template']);
+
+  return $option;
 }
 
 /**
