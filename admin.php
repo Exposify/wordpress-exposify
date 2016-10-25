@@ -64,6 +64,14 @@ function exposify_init_settings()
   );
 
   add_settings_field(
+    'exposify_theme_template',
+    __('Page Template für die Anzeige der Immobilien', 'exposify'),
+    'exposify_theme_template_render',
+    'exposify_settings',
+    'exposify_visual_section'
+  );
+
+  add_settings_field(
     'exposify_template_overview',
     __('HTML Template für die Immobilien Übersicht', 'exposify'),
     'exposify_template_overview_render',
@@ -143,6 +151,21 @@ function exposify_template_overview_render()
     <?php echo __('Das HTML Template für die Übersicht aller Immobilien. Über das Array <code>$properties</code> kann auf alle Immobilien zugegriffen werden. Über die Variable <code>$search_query</code> kann auf den aktuellen Such-String zugegriffen werden.', 'exposify'); ?>
   </p>
   <textarea class="large-text" type="text" name="exposify_settings[exposify_template_overview]" rows="15"><?php echo $options['exposify_template_overview']; ?></textarea>
+  <?php
+}
+
+/**
+ * Display the field.
+ */
+function exposify_theme_template_render()
+{
+  $options = get_option('exposify_settings');
+  ?>
+  <select name="exposify_settings[exposify_theme_template]">
+    <?php foreach(wp_get_theme()->get_page_templates() as $path => $name) {
+      echo '<option value="' . $path . '" ' . ($options['exposify_theme_template'] == $path ? 'selected' : '') . '>' . $name . '</option>';
+    } ?>
+  </select>
   <?php
 }
 

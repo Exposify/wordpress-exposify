@@ -93,7 +93,7 @@ function exposify_change_properties_page_content($content)
 function exposify_change_properties_page_title($title, $id)
 {
   if ($id == get_option('exposify_properties_page_id')) {
-    if (get_query_var('slug')) {
+    if (get_query_var('slug') && in_the_loop()) {
       $credentials = get_option('exposify_settings');
       $immoapiurl = $credentials['exposify_api_url'];
       $immoapikey = $credentials['exposify_api_key'];
@@ -130,6 +130,16 @@ function exposify_get_css()
   }
 }
 
+function exposify_change_page_template($template)
+{
+  if (get_the_ID() == get_option('exposify_properties_page_id')) {
+    $template = get_option('exposify_settings')['exposify_theme_template'];
+    return get_template_directory() . '/' . $template;
+  }
+  return $template;
+}
+
 add_filter('the_content', 'exposify_change_properties_page_content');
 add_filter('the_title', 'exposify_change_properties_page_title', 10, 2);
+add_filter('page_template', 'exposify_change_page_template');
 add_action('wp_head', 'exposify_get_css', 99999999);
