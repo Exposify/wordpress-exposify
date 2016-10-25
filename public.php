@@ -8,8 +8,22 @@
  */
 function exposify_show_single_property($api_url, $api_key, $slug)
 {
-  $api_json = file_get_contents($api_url . '/' . $slug . '?api_token=' . $api_key);
-  $property = json_decode($api_json, true);
+  $curl = curl_init();
+  curl_setopt_array($curl, [
+    CURLOPT_RETURNTRANSFER => 1,
+    CURLOPT_URL            => $api_url . '/' . $slug . '?api_token=' . $api_key,
+    CURLOPT_TIMEOUT        => 5
+  ]);
+  $result = curl_exec($curl);
+  curl_close($curl);
+
+  if (!$result) {
+    echo __('Die Immobilie kann im Moment leider nicht geladen werden. Versuchen Sie es bitte später erneut oder kontaktieren Sie uns!', 'exposify');
+    return null;
+  }
+
+  $property  = json_decode($result, true);
+
   // evaluate the single Template
   $visual_settings = get_option('exposify_settings');
   eval(' ?>' . $visual_settings['exposify_template_single'] . '<?php ');
@@ -23,10 +37,23 @@ function exposify_show_single_property($api_url, $api_key, $slug)
  */
 function exposify_show_properties_overview($api_url, $api_key, $search_query='')
 {
-  // make the request
-  $api_json   = file_get_contents($api_url . '?api_token=' . $api_key . '&query=' . $search_query);
-  $api_array  = json_decode($api_json, true);
+  $curl = curl_init();
+  curl_setopt_array($curl, [
+    CURLOPT_RETURNTRANSFER => 1,
+    CURLOPT_URL            => $api_url . '?api_token=' . $api_key . '&query=' . $search_query,
+    CURLOPT_TIMEOUT        => 5
+  ]);
+  $result = curl_exec($curl);
+  curl_close($curl);
+
+  if (!$result) {
+    echo __('Die Immobilien können im Moment leider nicht geladen werden. Versuchen Sie es bitte später erneut oder kontaktieren Sie uns!', 'exposify');
+    return null;
+  }
+
+  $api_array  = json_decode($result, true);
   $properties = $api_array['properties'];
+
   // evaluate the overview Template
   $visual_settings = get_option('exposify_settings');
   eval(' ?>' . $visual_settings['exposify_template_overview'] . '<?php ');
@@ -70,8 +97,21 @@ function exposify_change_properties_page_title($title, $id)
       $credentials = get_option('exposify_settings');
       $immoapiurl = $credentials['exposify_api_url'];
       $immoapikey = $credentials['exposify_api_key'];
-      $api_json = file_get_contents($immoapiurl . '/' . get_query_var('slug') . '?api_token=' . $immoapikey);
-      $property = json_decode($api_json, true);
+
+      $curl = curl_init();
+      curl_setopt_array($curl, [
+        CURLOPT_RETURNTRANSFER => 1,
+        CURLOPT_URL            => $immoapiurl . '/' . get_query_var('slug') . '?api_token=' . $immoapikey,
+        CURLOPT_TIMEOUT        => 5
+      ]);
+      $result = curl_exec($curl);
+      curl_close($curl);
+
+      if (!$result) {
+        return $title;
+      }
+
+      $property = json_decode($result, true);
       return $property['name'];
     }
   }
