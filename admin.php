@@ -72,6 +72,22 @@ function exposify_init_settings()
   );
 
   add_settings_field(
+    'exposify_extra_styles',
+    __('Zusätzlich einzubindende Style Dateien', 'exposify'),
+    'exposify_extra_styles_render',
+    'exposify_settings',
+    'exposify_visual_section'
+  );
+
+  add_settings_field(
+    'exposify_extra_scripts',
+    __('Zusätzlich einzubindende Javascript Dateien', 'exposify'),
+    'exposify_extra_scripts_render',
+    'exposify_settings',
+    'exposify_visual_section'
+  );
+
+  add_settings_field(
     'exposify_template_overview',
     __('HTML Template für die Immobilien Übersicht', 'exposify'),
     'exposify_template_overview_render',
@@ -168,6 +184,26 @@ function exposify_template_overview_render()
   </p>
   <textarea class="large-text" type="text" name="exposify_settings[exposify_template_overview]" rows="15"><?php echo $options['exposify_template_overview']; ?></textarea>
   <?php
+}
+
+/**
+ * Display the field.
+ */
+function exposify_extra_styles_render() {
+    $options = get_option('exposify_settings');
+    ?>
+    <textarea class="large-text" type="text" name="exposify_settings[exposify_extra_styles]" rows="3" placeholder="<?php echo __('Name; URI;', 'exposify'); ?>"><?php echo $options['exposify_extra_styles']; ?></textarea>
+    <?php
+}
+
+/**
+ * Display the field.
+ */
+function exposify_extra_scripts_render() {
+    $options = get_option('exposify_settings');
+    ?>
+    <textarea class="large-text" type="text" name="exposify_settings[exposify_extra_scripts]" rows="3" placeholder="<?php echo __('Name; URI; Boolean, soll Skript erst im Footer eingebunden werden?;', 'exposify'); ?>"><?php echo $options['exposify_extra_scripts']; ?></textarea>
+    <?php
 }
 
 /**

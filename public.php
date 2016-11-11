@@ -148,7 +148,26 @@ function exposify_change_page_template($template)
   return $template;
 }
 
+/**
+ * Append extra CSS and JS files to the header/footer
+ */
+function exposify_add_additional_css() {
+    $options = get_option('exposify_settings');
+    $styles = explode('\r\n', $options['exposify_extra_styles']);
+    $scripts = explode('\r\n', $options['exposify_extra_scripts']);
+
+    foreach ($styles as $style) {
+        $style_array = explode('; ', $style, 3);
+        wp_enqueue_style($style_array[0], $style_array[1]);
+    }
+    foreach ($scripts as $script) {
+        $script_array = explode('; ', $script, 4);
+        wp_enqueue_script($script_array[0], $script_array[1], null, null, boolval($script_array[2]));
+    }
+}
+
 add_filter('the_content', 'exposify_change_properties_page_content');
 add_filter('the_title', 'exposify_change_properties_page_title', 10, 2);
 add_filter('page_template', 'exposify_change_page_template');
 add_action('wp_head', 'exposify_get_css', 99999999);
+add_action('wp_enqueue_scripts', 'exposify_add_additional_css' );
