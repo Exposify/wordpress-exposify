@@ -6,7 +6,7 @@
  * @param  String $api_key
  * @param  String $slug
  */
-function exposify_show_single_property($api_url, $api_key, $slug)
+function exposify_show_single_property($api_url, $api_key, $slug, $site_slug = '')
 {
   $curl = curl_init();
   curl_setopt_array($curl, [
@@ -35,7 +35,7 @@ function exposify_show_single_property($api_url, $api_key, $slug)
  * @param  String $api_key
  * @param  String $search_query
  */
-function exposify_show_properties_overview($api_url, $api_key, $search_query='')
+function exposify_show_properties_overview($api_url, $api_key, $search_query = '', $site_slug = '')
 {
   $curl = curl_init();
   curl_setopt_array($curl, [
@@ -54,6 +54,8 @@ function exposify_show_properties_overview($api_url, $api_key, $search_query='')
   $api_array  = json_decode($result, true);
   $properties = $api_array['properties'];
 
+  $site_slug = $site_slug ?: 'immobilien';
+
   // evaluate the overview Template
   $visual_settings = get_option('exposify_settings');
   eval(' ?>' . $visual_settings['exposify_template_overview'] . '<?php ');
@@ -69,6 +71,7 @@ function exposify_change_properties_page_content($content)
   if (get_the_ID() == get_option('exposify_properties_page_id')) {
     // get the credentials
     $credentials = get_option('exposify_settings');
+	$siteslug   = $credentials['exposify_site_slug'];
     $immoapiurl = $credentials['exposify_api_url'];
     $immoapikey = $credentials['exposify_api_key'];
 
@@ -77,9 +80,9 @@ function exposify_change_properties_page_content($content)
     }
 
     if (get_query_var('slug')) {
-      exposify_show_single_property($immoapiurl, $immoapikey, get_query_var('slug'));
+      exposify_show_single_property($immoapiurl, $immoapikey, get_query_var('slug'), $siteslug);
     } else {
-      exposify_show_properties_overview($immoapiurl, $immoapikey, get_query_var('search'));
+      exposify_show_properties_overview($immoapiurl, $immoapikey, get_query_var('search'), $siteslug);
     }
   }
   return $content;

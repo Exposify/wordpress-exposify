@@ -180,7 +180,7 @@ function exposify_template_overview_render()
   $options = get_option('exposify_settings');
   ?>
   <p>
-    <?php echo __('Das HTML Template für die Übersicht aller Immobilien. Über das Array <code>$properties</code> kann auf alle Immobilien zugegriffen werden. Über die Variable <code>$search_query</code> kann auf den aktuellen Such-String zugegriffen werden.', 'exposify'); ?>
+    <?php echo __('Das HTML Template für die Übersicht aller Immobilien. Über das Array <code>$properties</code> kann auf alle Immobilien zugegriffen werden. Über die Variable <code>$search_query</code> kann auf den aktuellen Such-String zugegriffen werden. Über die Variable <code>$site_slug</code> kann auf den Slug der Immobilien-Seite zugegriffen werden.', 'exposify'); ?>
   </p>
   <textarea class="large-text" type="text" name="exposify_settings[exposify_template_overview]" rows="15"><?php echo $options['exposify_template_overview']; ?></textarea>
   <?php
