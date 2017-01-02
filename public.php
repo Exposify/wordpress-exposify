@@ -161,10 +161,12 @@ function exposify_add_additional_css() {
 
     foreach ($styles as $style) {
         $style_array = explode('; ', $style, 3);
+        if ($style_array[0] == '') { continue; }
         wp_enqueue_style($style_array[0], $style_array[1]);
     }
     foreach ($scripts as $script) {
         $script_array = explode('; ', $script, 4);
+        if ($style_array[0] == '') { continue; }
         wp_enqueue_script($script_array[0], $script_array[1], null, null, boolval($script_array[2]));
     }
 }
