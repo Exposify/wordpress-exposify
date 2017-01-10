@@ -24,14 +24,6 @@ function exposify_init_settings()
   );
 
   add_settings_field(
-    'exposify_api_url',
-    __('Deine Team-URL von Exposify*', 'exposify'),
-    'exposify_api_url_render',
-    'exposify_settings',
-    'exposify_general_section'
-  );
-
-  add_settings_field(
     'exposify_api_key',
     __('Dein API Schlüssel für Exposify*', 'exposify'),
     'exposify_api_key_render',
@@ -70,46 +62,6 @@ function exposify_init_settings()
     'exposify_settings',
     'exposify_visual_section'
   );
-
-  add_settings_field(
-    'exposify_extra_styles',
-    __('Zusätzlich einzubindende Style Dateien', 'exposify'),
-    'exposify_extra_styles_render',
-    'exposify_settings',
-    'exposify_visual_section'
-  );
-
-  add_settings_field(
-    'exposify_extra_scripts',
-    __('Zusätzlich einzubindende Javascript Dateien', 'exposify'),
-    'exposify_extra_scripts_render',
-    'exposify_settings',
-    'exposify_visual_section'
-  );
-
-  add_settings_field(
-    'exposify_template_overview',
-    __('HTML Template für die Immobilien Übersicht', 'exposify'),
-    'exposify_template_overview_render',
-    'exposify_settings',
-    'exposify_visual_section'
-  );
-
-  add_settings_field(
-    'exposify_template_single',
-    __('HTML Template für eine einzelne Immobilie', 'exposify'),
-    'exposify_template_single_render',
-    'exposify_settings',
-    'exposify_visual_section'
-  );
-
-  add_settings_field(
-    'exposify_css',
-    __('CSS Template', 'exposify'),
-    'exposify_css_render',
-    'exposify_settings',
-    'exposify_visual_section'
-  );
 }
 
 /**
@@ -119,24 +71,12 @@ function exposify_init_settings()
  */
 function exposify_sanitize_settings($option)
 {
-  $option['exposify_api_url']        = sanitize_text_field($option['exposify_api_url']);
   $option['exposify_api_key']        = sanitize_text_field($option['exposify_api_key']);
   $option['exposify_site_title']     = sanitize_text_field($option['exposify_site_title']);
   $option['exposify_site_slug']      = sanitize_text_field($option['exposify_site_slug']);
   $option['exposify_theme_template'] = sanitize_text_field($option['exposify_theme_template']);
 
   return $option;
-}
-
-/**
- * Display the field.
- */
-function exposify_api_url_render()
-{
-  $options = get_option('exposify_settings');
-  ?>
-  <input class="regular-text" type="text" name="exposify_settings[exposify_api_url]" value="<?php echo $options['exposify_api_url']; ?>" placeholder="z.B. https://app.exposify.de/api/beta/foo-bar-team">
-  <?php
 }
 
 /**
@@ -175,40 +115,6 @@ function exposify_site_slug_render()
 /**
  * Display the field.
  */
-function exposify_template_overview_render()
-{
-  $options = get_option('exposify_settings');
-  ?>
-  <p>
-    <?php echo __('Das HTML Template für die Übersicht aller Immobilien. Über das Array <code>$properties</code> kann auf alle Immobilien zugegriffen werden. Über die Variable <code>$search_query</code> kann auf den aktuellen Such-String zugegriffen werden. Über die Variable <code>$site_slug</code> kann auf den Slug der Immobilien-Seite zugegriffen werden.', 'exposify'); ?>
-  </p>
-  <textarea class="large-text" type="text" name="exposify_settings[exposify_template_overview]" rows="15"><?php echo $options['exposify_template_overview']; ?></textarea>
-  <?php
-}
-
-/**
- * Display the field.
- */
-function exposify_extra_styles_render() {
-    $options = get_option('exposify_settings');
-    ?>
-    <textarea class="large-text" type="text" name="exposify_settings[exposify_extra_styles]" rows="3" placeholder="<?php echo __('Name; URI;', 'exposify'); ?>"><?php echo $options['exposify_extra_styles']; ?></textarea>
-    <?php
-}
-
-/**
- * Display the field.
- */
-function exposify_extra_scripts_render() {
-    $options = get_option('exposify_settings');
-    ?>
-    <textarea class="large-text" type="text" name="exposify_settings[exposify_extra_scripts]" rows="3" placeholder="<?php echo __('Name; URI; Boolean, soll Skript erst im Footer eingebunden werden?;', 'exposify'); ?>"><?php echo $options['exposify_extra_scripts']; ?></textarea>
-    <?php
-}
-
-/**
- * Display the field.
- */
 function exposify_theme_template_render()
 {
   $options = get_option('exposify_settings');
@@ -221,31 +127,6 @@ function exposify_theme_template_render()
     }
     ?>
   </select>
-  <?php
-}
-
-/**
- * Display the field.
- */
-function exposify_template_single_render()
-{
-  $options = get_option('exposify_settings');
-  ?>
-  <p>
-    <?php echo __('Das HTML Template für eine einzelne Immobilie. Über die Variable <code>$property</code> kann auf die Immobilie zugegriffen werden.', 'exposify'); ?>
-  </p>
-  <textarea class="large-text" type="text" name="exposify_settings[exposify_template_single]" rows="15"><?php echo $options['exposify_template_single']; ?></textarea>
-  <?php
-}
-
-/**
- * Display the field.
- */
-function exposify_css_render()
-{
-  $options = get_option('exposify_settings');
-  ?>
-  <textarea class="large-text" type="text" name="exposify_settings[exposify_css]" rows="15"><?php echo $options['exposify_css']; ?></textarea>
   <?php
 }
 

@@ -1,178 +1,131 @@
 <?php
 
-/**
- * Evaluate the HTML Template from the database for a single property and display it.
- * @param  String $api_url
- * @param  String $api_key
- * @param  String $slug
- */
-function exposify_show_single_property($api_url, $api_key, $slug, $site_slug = '')
-{
-  $curl = curl_init();
-  curl_setopt_array($curl, [
-    CURLOPT_RETURNTRANSFER => 1,
-    CURLOPT_URL            => $api_url . '/' . $slug . '?api_token=' . $api_key,
-    CURLOPT_TIMEOUT        => 5
-  ]);
-  $result = curl_exec($curl);
-  curl_close($curl);
+class ExposifyViewer {
 
-  if (!$result) {
-    echo __('Die Immobilie kann im Moment leider nicht geladen werden. Versuchen Sie es bitte später erneut oder kontaktieren Sie uns!', 'exposify');
-    return null;
+  /**
+  * An instance of the Exposify handler.
+  * @var Exposify
+  */
+  public $exposify;
+
+  /**
+  * Construct the class.
+  * @param String $apiKey
+  * @param String $baseUrl
+  */
+  public function __construct($apiKey, $baseUrl = 'https://app.exposify.de')
+  {
+    $this->exposify = new Exposify($apiKey, $baseUrl);
+
+    add_filter('the_content',        [$this, 'changePageContent']);
+    add_filter('page_template',      [$this, 'changePageTemplate']);
+    add_action('wp_enqueue_scripts', [$this, 'insertLinks']);
   }
 
-  $property  = json_decode($result, true);
-
-  // evaluate the single Template
-  $visual_settings = get_option('exposify_settings');
-  eval(' ?>' . $visual_settings['exposify_template_single'] . '<?php ');
-}
-
-/**
- * Evaluate the HTML Template from the database for the properties overview and display it.
- * @param  String $api_url
- * @param  String $api_key
- * @param  String $search_query
- */
-function exposify_show_properties_overview($api_url, $api_key, $search_query = '', $site_slug = '')
-{
-  $curl = curl_init();
-  curl_setopt_array($curl, [
-    CURLOPT_RETURNTRANSFER => 1,
-    CURLOPT_URL            => $api_url . '?api_token=' . $api_key . '&query=' . $search_query,
-    CURLOPT_TIMEOUT        => 5
-  ]);
-  $result = curl_exec($curl);
-  curl_close($curl);
-
-  if (!$result) {
-    echo __('Die Immobilien können im Moment leider nicht geladen werden. Versuchen Sie es bitte später erneut oder kontaktieren Sie uns!', 'exposify');
-    return null;
-  }
-
-  $api_array  = json_decode($result, true);
-  $properties = $api_array['properties'];
-
-  $site_slug = $site_slug ?: 'immobilien';
-
-  // evaluate the overview Template
-  $visual_settings = get_option('exposify_settings');
-  eval(' ?>' . $visual_settings['exposify_template_overview'] . '<?php ');
-}
-
-/**
- * Alter the content of the properties page and replace it with the templates.
- * @param  String $content
- * @return String $content
- */
-function exposify_change_properties_page_content($content)
-{
-  if (get_the_ID() == get_option('exposify_properties_page_id')) {
-    // get the credentials
-    $credentials = get_option('exposify_settings');
-	$siteslug   = $credentials['exposify_site_slug'];
-    $immoapiurl = $credentials['exposify_api_url'];
-    $immoapikey = $credentials['exposify_api_key'];
-
-    if (filter_var($immoapiurl, FILTER_VALIDATE_URL) === false || !$immoapikey) {
-      return __('Die Immobilienübersicht ist noch nicht fertig eingerichtet.', 'exposify');
-    }
-
-    if (get_query_var('slug')) {
-      exposify_show_single_property($immoapiurl, $immoapikey, get_query_var('slug'), $siteslug);
-    } else {
-      exposify_show_properties_overview($immoapiurl, $immoapikey, get_query_var('search'), $siteslug);
-    }
-  }
-  return $content;
-}
-
-/**
- * Alter the title of the properties page.
- * @param  String $content
- * @return String $content
- */
-function exposify_change_properties_page_title($title, $id)
-{
-  if ($id == get_option('exposify_properties_page_id')) {
-    if (get_query_var('slug') && in_the_loop()) {
-      $credentials = get_option('exposify_settings');
-      $immoapiurl = $credentials['exposify_api_url'];
-      $immoapikey = $credentials['exposify_api_key'];
-
-      $curl = curl_init();
-      curl_setopt_array($curl, [
-        CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_URL            => $immoapiurl . '/' . get_query_var('slug') . '?api_token=' . $immoapikey,
-        CURLOPT_TIMEOUT        => 5
-      ]);
-      $result = curl_exec($curl);
-      curl_close($curl);
-
-      if (!$result) {
-        return $title;
+  /**
+  * Request the property/properties, if there isn't a result yet.
+  * @return Void
+  */
+  public function attemptRequest()
+  {
+    if (empty($this->exposify->html->getResult())) {
+      if (get_query_var('slug')) {
+        $this->exposify->html->requestSingleProperty(get_query_var('slug'));
+      } else {
+        $this->exposify->html->requestAllProperties(get_query_var('search', ''));
       }
-
-      $property = json_decode($result, true);
-      return $property['name'];
     }
   }
-  return $title;
-}
 
-/**
- * Display the custom css. Use wp_enqueue_style later.
- */
-function exposify_get_css()
-{
-  if (get_the_ID() == get_option('exposify_properties_page_id')) {
-    $data = get_option('exposify_settings');
-    $css = "<style id='exposify-css'>" . $data['exposify_css'] . "</style>\r";
-    echo $css;
-  }
-}
+  /**
+  * Change the page template to the specified one.
+  * @param  String $oldTemplate
+  * @return String
+  */
+  public function changePageTemplate($oldTemplate)
+  {
+    if (get_the_ID() != get_option('exposify_properties_page_id')) {
+      return $oldTemplate;
+    }
 
-/**
- * Alter the template of the properties page.
- * @param  String $template
- * @return String
- */
-function exposify_change_page_template($template)
-{
-  if (get_the_ID() == get_option('exposify_properties_page_id')) {
     $new_template = get_option('exposify_settings')['exposify_theme_template'];
     if (locate_template($new_template) != '' && $new_template != 'default') {
       return get_template_directory() . '/' . $new_template;
-    } else {
-      return $template;
+    }
+
+    return $oldTemplate;
+  }
+
+  /**
+  * Insert the properties into the page.
+  * @param  String $oldContent
+  * @return String
+  */
+  public function changePageContent($oldContent)
+  {
+    if (get_the_ID() != get_option('exposify_properties_page_id')) {
+      return $oldContent;
+    }
+    $this->attemptRequest();
+
+    return $this->exposify->html->getContent();
+  }
+
+  /**
+  * Change the page title to the property name.
+  * @param  String $oldTitle
+  * @return String
+  */
+  public function changePageTitle($oldTitle)
+  {
+    if (
+      get_the_ID() != get_option('exposify_properties_page_id') ||
+      !in_the_loop()
+    ) {
+      return $oldTitle;
+    }
+
+    $this->attemptRequest();
+
+    return $this->exposify->html->getTitle();
+  }
+
+  /**
+  * Insert all external CSS and JS files in the page.
+  * @return Void
+  */
+  public function insertLinks()
+  {
+    if (get_the_ID() != get_option('exposify_properties_page_id')) {
+      return;
+    }
+
+    $this->attemptRequest();
+
+    if (isset($this->exposify->html->getError()['css']))  {
+      $css = $this->exposify->html->getError()['js'];
+    }
+    if (isset($this->exposify->html->getResult()['css'])) {
+      $css = $this->exposify->html->getResult()['css'];
+    }
+    if (isset($css) && is_array($css)) {
+      foreach ($css as $css_src) {
+        wp_enqueue_style('exposify', $css_src);
+      }
+    }
+
+    if (isset($this->exposify->html->getError()['js']))  {
+      $js = $this->exposify->html->getError()['js'];
+    }
+    if (isset($this->exposify->html->getResult()['js'])) {
+      $js = $this->exposify->html->getResult()['js'];
+    }
+    if (isset($js) && is_array($js)) {
+      foreach ($js as $js_src) {
+        wp_enqueue_script('exposify', $js_src);
+      }
     }
   }
-  return $template;
 }
 
-/**
- * Append extra CSS and JS files to the header/footer
- */
-function exposify_add_additional_css() {
-    $options = get_option('exposify_settings');
-    $styles = explode('\r\n', $options['exposify_extra_styles']);
-    $scripts = explode('\r\n', $options['exposify_extra_scripts']);
-
-    foreach ($styles as $style) {
-        $style_array = explode('; ', $style, 3);
-        if ($style_array[0] == '') { continue; }
-        wp_enqueue_style($style_array[0], $style_array[1]);
-    }
-    foreach ($scripts as $script) {
-        $script_array = explode('; ', $script, 4);
-        if ($style_array[0] == '') { continue; }
-        wp_enqueue_script($script_array[0], $script_array[1], null, null, boolval($script_array[2]));
-    }
-}
-
-add_filter('the_content', 'exposify_change_properties_page_content');
-add_filter('the_title', 'exposify_change_properties_page_title', 10, 2);
-add_filter('page_template', 'exposify_change_page_template');
-add_action('wp_head', 'exposify_get_css', 99999999);
-add_action('wp_enqueue_scripts', 'exposify_add_additional_css' );
+$viewer = new ExposifyViewer(get_option('exposify_settings')['exposify_api_key']);
