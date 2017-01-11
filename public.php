@@ -122,7 +122,7 @@ class ExposifyViewer {
     }
     if (isset($js) && is_array($js)) {
       foreach ($js as $js_src) {
-        wp_enqueue_script('exposify', $js_src);
+        wp_enqueue_script('exposify', $js_src, ['jquery']);
       }
     }
   }
