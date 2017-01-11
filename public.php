@@ -109,8 +109,10 @@ class ExposifyViewer {
       $css = $this->exposify->html->getResult()['css'];
     }
     if (isset($css) && is_array($css)) {
+      $i = 1;
       foreach ($css as $css_src) {
-        wp_enqueue_style('exposify', $css_src);
+        wp_enqueue_style('exposify-' . $i, $css_src);
+        $i++;
       }
     }
 
@@ -121,8 +123,10 @@ class ExposifyViewer {
       $js = $this->exposify->html->getResult()['js'];
     }
     if (isset($js) && is_array($js)) {
+      $i = 1;
       foreach ($js as $js_src) {
-        wp_enqueue_script('exposify', $js_src, ['jquery']);
+        wp_enqueue_script('exposify-' . $i, $js_src, ['jquery']);
+        $i++;
       }
     }
   }
