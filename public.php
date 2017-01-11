@@ -103,7 +103,7 @@ class ExposifyViewer {
     $this->attemptRequest();
 
     if (isset($this->exposify->html->getError()['css']))  {
-      $css = $this->exposify->html->getError()['js'];
+      $css = $this->exposify->html->getError()['css'];
     }
     if (isset($this->exposify->html->getResult()['css'])) {
       $css = $this->exposify->html->getResult()['css'];
