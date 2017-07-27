@@ -135,9 +135,9 @@ class HtmlHandler extends ApiBlueprint
 	{
 		if (!empty($this->error)) {
 			http_response_code($this->error['id'] ?: 404);
-			echo htmlspecialchars_decode($this->error['attributes']['html']);
+			return htmlspecialchars_decode($this->error['attributes']['html']);
 		} else {
-			echo htmlspecialchars_decode($this->result['attributes']['html']);
+			return htmlspecialchars_decode($this->result['attributes']['html']);
 		}
 	}
 
@@ -162,40 +162,6 @@ class HtmlHandler extends ApiBlueprint
 	{
 		if (isset($this->result['attributes']['description'])) {
 			return $this->result['attributes']['description'];
-		}
-	}
-
-	/**
-	 * Output all head tags needed for the requested ressources.
-	 *
-	 * @return void
-	 */
-	public function getMeta()
-	{
-		if (isset($this->error['css']))  { $css = $this->error['css']; }
-		if (isset($this->result['css'])) { $css = $this->result['css']; }
-
-		if (isset($css) && is_array($css)) {
-			foreach ($css as $css_src) {
-				echo '<link rel="stylesheet" href="' . $css_src . '">';
-			}
-		}
-	}
-
-	/**
-	 * Output all footer tags needed for the requested ressources.
-	 *
-	 * @return void
-	 */
-	public function getScripts()
-	{
-		if (isset($this->error['js']))  { $js = $this->error['js']; }
-		if (isset($this->result['js'])) { $js = $this->result['js']; }
-
-		if (isset($js) && is_array($js)) {
-			foreach ($js as $js_src) {
-				echo '<script src="' . $js_src . '"></script>';
-			}
 		}
 	}
 }
