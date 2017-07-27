@@ -4,14 +4,17 @@ class ExposifyViewer {
 
   /**
   * An instance of the Exposify handler.
+  *
   * @var Exposify
   */
   public $exposify;
 
   /**
   * Construct the class.
-  * @param String $apiKey
-  * @param String $baseUrl
+  *
+  * @param  string  $apiKey
+  * @param  string  $baseUrl
+  * @return void
   */
   public function __construct($apiKey, $baseUrl = 'https://app.exposify.de')
   {
@@ -24,7 +27,8 @@ class ExposifyViewer {
 
   /**
   * Request the property/properties, if there isn't a result yet.
-  * @return Void
+  *
+  * @return void
   */
   public function attemptRequest()
   {
@@ -39,8 +43,9 @@ class ExposifyViewer {
 
   /**
   * Change the page template to the specified one.
-  * @param  String $oldTemplate
-  * @return String
+  *
+  * @param  string  $oldTemplate
+  * @return string
   */
   public function changePageTemplate($oldTemplate)
   {
@@ -58,8 +63,9 @@ class ExposifyViewer {
 
   /**
   * Insert the properties into the page.
-  * @param  String $oldContent
-  * @return String
+  *
+  * @param  string  $oldContent
+  * @return string
   */
   public function changePageContent($oldContent)
   {
@@ -73,8 +79,9 @@ class ExposifyViewer {
 
   /**
   * Change the page title to the property name.
-  * @param  String $oldTitle
-  * @return String
+  *
+  * @param  string  $oldTitle
+  * @return string
   */
   public function changePageTitle($oldTitle)
   {
@@ -92,7 +99,8 @@ class ExposifyViewer {
 
   /**
   * Insert all external CSS and JS files in the page.
-  * @return Void
+  *
+  * @return void
   */
   public function insertLinks()
   {
@@ -102,11 +110,11 @@ class ExposifyViewer {
 
     $this->attemptRequest();
 
-    if (isset($this->exposify->html->getError()['css']))  {
-      $css = $this->exposify->html->getError()['css'];
+    if (isset($this->exposify->html->getError()['attributes']['css']))  {
+      $css = $this->exposify->html->getError()['attributes']['css'];
     }
-    if (isset($this->exposify->html->getResult()['css'])) {
-      $css = $this->exposify->html->getResult()['css'];
+    if (isset($this->exposify->html->getResult()['attributes']['css'])) {
+      $css = $this->exposify->html->getResult()['attributes']['css'];
     }
     if (isset($css) && is_array($css)) {
       $i = 1;
@@ -116,16 +124,17 @@ class ExposifyViewer {
       }
     }
 
-    if (isset($this->exposify->html->getError()['js']))  {
-      $js = $this->exposify->html->getError()['js'];
+    if (isset($this->exposify->html->getError()['attributes']['js']))  {
+      $js = $this->exposify->html->getError()['attributes']['js'];
     }
-    if (isset($this->exposify->html->getResult()['js'])) {
-      $js = $this->exposify->html->getResult()['js'];
+    if (isset($this->exposify->html->getResult()['attributes']['js'])) {
+      $js = $this->exposify->html->getResult()['attributes']['js'];
     }
+
     if (isset($js) && is_array($js)) {
       $i = 1;
       foreach ($js as $js_src) {
-        wp_enqueue_script('exposify-' . $i, $js_src, ['jquery']);
+        wp_enqueue_script('exposify-' . $i, $js_src, ['jquery'], false, true);
         $i++;
       }
     }

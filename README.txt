@@ -3,7 +3,7 @@ Contributors: richartkeil, niklasravnsborg
 Tags: exposify, real estate, property, api
 Requires at least: 4.5.0
 Tested up to: 4.6.1
-Stable tag: 1.2.1
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,8 +47,15 @@ Have a look at our site: [www.exposify.de ](https://www.exposify.de)
 
 == Changelog ==
 
+= 1.3 =
+* Switch to new API
+* Style fixes
 = 1.2 =
-* Code refactor. Pull HTML templates from Exposify instead from the own site.
+* Code refactor
+* Pull HTML templates from Exposify instead from the own site
+* Fixing some small errors
+= 1.1 =
+* Allow additional style and js sheets
 = 1.0 =
 * Inital version.
 
