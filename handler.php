@@ -71,7 +71,7 @@ abstract class ApiBlueprint
 	 */
 	public function requestAllProperties($searchQuery)
 	{
-		$url = $this->apiUrl . '?api_token=' . $this->apiKey . '&search=' . $searchQuery;
+		$url = $this->apiUrl . '?api_token=' . $this->apiKey . '&search=' . urlencode($searchQuery);
 		$this->requestData($url);
 	}
 
