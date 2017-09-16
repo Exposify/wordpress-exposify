@@ -23,6 +23,9 @@ class ExposifyViewer {
     add_filter('the_content',        [$this, 'changePageContent']);
     add_filter('page_template',      [$this, 'changePageTemplate']);
     add_action('wp_enqueue_scripts', [$this, 'insertLinks']);
+    // add_filter('wp_title',           [$this, 'changePageTitle']);
+    // add_filter('the_title',              [$this, 'changePageTitle']);
+    add_filter('pre_get_document_title', [$this, 'changeSiteTitle'], 10);
   }
 
   /**
@@ -85,16 +88,37 @@ class ExposifyViewer {
   */
   public function changePageTitle($oldTitle)
   {
-    if (
-      get_the_ID() != get_option('exposify_properties_page_id') ||
-      !in_the_loop()
-    ) {
+    if (!get_query_var('slug')) {
+      return $oldTitle;
+    }
+
+    if (get_the_ID() != get_option('exposify_properties_page_id')) {
+      return $oldTitle;
+    }
+
+    if (!in_the_loop()) {
       return $oldTitle;
     }
 
     $this->attemptRequest();
 
     return $this->exposify->html->getTitle();
+  }
+
+  /**
+  * Change the site title to the property name.
+  *
+  * @param  string  $oldTitle
+  * @return string
+  */
+  public function changeSiteTitle($oldTitle)
+  {
+    if (get_query_var('slug')) {
+      $this->attemptRequest();
+      return $this->exposify->html->getTitle();
+    }
+
+    return $oldTitle;
   }
 
   /**
