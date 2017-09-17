@@ -20,12 +20,11 @@ class ExposifyViewer {
   {
     $this->exposify = new Exposify($apiKey, $baseUrl);
 
-    add_filter('the_content',        [$this, 'changePageContent']);
-    add_filter('page_template',      [$this, 'changePageTemplate']);
-    add_action('wp_enqueue_scripts', [$this, 'insertLinks']);
-    // add_filter('wp_title',           [$this, 'changePageTitle']);
-    // add_filter('the_title',              [$this, 'changePageTitle']);
-    add_filter('pre_get_document_title', [$this, 'changeSiteTitle'], 10);
+    add_filter('the_content',            [$this, 'changePageContent']);
+    add_filter('page_template',          [$this, 'changePageTemplate']);
+    add_action('wp_enqueue_scripts',     [$this, 'insertLinks']);
+    add_filter('the_title',              [$this, 'changePageTitle']);
+    add_filter('pre_get_document_title', [$this, 'changeSiteTitle']);
   }
 
   /**
@@ -88,15 +87,11 @@ class ExposifyViewer {
   */
   public function changePageTitle($oldTitle)
   {
-    if (!get_query_var('slug')) {
-      return $oldTitle;
-    }
-
-    if (get_the_ID() != get_option('exposify_properties_page_id')) {
-      return $oldTitle;
-    }
-
-    if (!in_the_loop()) {
+    if (
+      !get_query_var('slug') ||
+      get_the_ID() != get_option('exposify_properties_page_id') ||
+      !in_the_loop()
+    ) {
       return $oldTitle;
     }
 
