@@ -3,7 +3,7 @@ Contributors: richartkeil, niklasravnsborg
 Tags: exposify, real estate, property, api
 Requires at least: 4.5.0
 Tested up to: 4.6.1
-Stable tag: 1.5.0
+Stable tag: 1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,7 +14,7 @@ Create stunning exposés with Exposify. Use this plugin to fetch and display all
 Exposify for Wordpress displays all of your real estate objects in an elegant way. Search engine optimized
 content and personalized styling make it a must have for all Exposify users!
 
-Visit us at [www.exposify.de ](https://www.exposify.de) or [send us a mail](mailto:info@exposify.de) 📬
+Visit us at [www.exposify.de ](https://www.exposify.de) or [send us a mail](mailto:team@exposify.de) 📬
 
 == Installation ==
 
@@ -47,6 +47,8 @@ Have a look at our site: [www.exposify.de ](https://www.exposify.de)
 
 == Changelog ==
 
+= 1.6 =
+* Update plugin to insert page titles correctly
 = 1.5 =
 * Change page titles where possible
 = 1.4 =
