@@ -2,6 +2,8 @@
 
 /**
  * Add an options page.
+ *
+ * @return void
  */
 function exposify_add_options_page()
 {
@@ -10,6 +12,8 @@ function exposify_add_options_page()
 
 /**
  * Initialize all settings.
+ *
+ * @return void
  */
 function exposify_init_settings()
 {
@@ -66,8 +70,9 @@ function exposify_init_settings()
 
 /**
  * Sanitize settings which aren't used as template.
- * @param  Array $option
- * @return Array
+ *
+ * @param  array  $option
+ * @return array
  */
 function exposify_sanitize_settings($option)
 {
@@ -81,6 +86,8 @@ function exposify_sanitize_settings($option)
 
 /**
  * Display the field.
+ *
+ * @return void
  */
 function exposify_api_key_render()
 {
@@ -92,6 +99,8 @@ function exposify_api_key_render()
 
 /**
  * Display the field.
+ *
+ * @return void
  */
 function exposify_site_title_render()
 {
@@ -103,6 +112,8 @@ function exposify_site_title_render()
 
 /**
  * Display the field.
+ *
+ * @return void
  */
 function exposify_site_slug_render()
 {
@@ -114,6 +125,8 @@ function exposify_site_slug_render()
 
 /**
  * Display the field.
+ *
+ * @return void
  */
 function exposify_theme_template_render()
 {
@@ -132,6 +145,8 @@ function exposify_theme_template_render()
 
 /**
  * Display the options page.
+ *
+ * @return void
  */
 function exposify_settings_page()
 {
@@ -149,8 +164,10 @@ function exposify_settings_page()
 
 /**
  * Hook for updated settings. Update the page and rules when necessary.
- * @param $old_settings Array The old settings
- * @param $new_settings Array The new settings
+ *
+ * @param  array  $old_settings
+ * @param  array  $new_settings
+ * @return void
  */
 function exposify_settings_updated($old_settings, $new_settings)
 {
@@ -174,7 +191,9 @@ function exposify_settings_updated($old_settings, $new_settings)
 
 /**
  * Remove the properties page from the overview.
+ *
  * @param  WP_Query $query
+ * @return void
  */
 function exposify_remove_pages_from_admin_interfaces($query)
 {

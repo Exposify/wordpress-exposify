@@ -12,6 +12,8 @@ License: GPL2
 
 /**
  * Add the page and the rewrite rules.
+ *
+ * @return void
  */
 function exposify_activate_plugin()
 {
@@ -22,6 +24,8 @@ function exposify_activate_plugin()
 
 /**
  * Remove the pages. Remove the old option from the previous plugin version.
+ *
+ * @return void
  */
 function exposify_deactivate_plugin()
 {
@@ -35,6 +39,8 @@ function exposify_deactivate_plugin()
 
 /**
  * Rewrite the URLs for single properties. Add 404 redirect for detail page.
+ *
+ * @return void
  */
 function exposify_rewrite()
 {
@@ -47,6 +53,8 @@ function exposify_rewrite()
 
 /**
  * Add a properties page and store its id. If there is already a saved id, delete it and add a new one.
+ *
+ * @return void
  */
 function exposify_add_all_pages()
 {
@@ -64,6 +72,7 @@ function exposify_add_all_pages()
  * @param  string  $pageTitle
  * @param  string  $pageSlug
  * @param  string  $pageDatabaseOptionName
+ * @return void
  */
 function exposify_add_page($pageTitle, $pageSlug, $pageDatabaseOptionName)
 {
@@ -88,6 +97,7 @@ function exposify_add_page($pageTitle, $pageSlug, $pageDatabaseOptionName)
  * Delete an Exposify page with the option where its id is stored in the database.
  *
  * @param  string  $pageDatabaseOptionName
+ * @return void
  */
 function exposify_delete_page($pageDatabaseOptionName)
 {
