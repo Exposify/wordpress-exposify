@@ -23,7 +23,7 @@ class ExposifyViewer {
     add_filter('the_content',            [$this, 'changePageContent']);
     add_filter('page_template',          [$this, 'changePageTemplate']);
     add_action('wp_enqueue_scripts',     [$this, 'insertLinks']);
-    add_filter('the_title',              [$this, 'changePageTitle']);
+    add_filter('the_title',              [$this, 'changePageTitle'], 10, 2);
     add_filter('pre_get_document_title', [$this, 'changeSiteTitle']);
   }
 
@@ -51,7 +51,10 @@ class ExposifyViewer {
   */
   public function changePageTemplate($oldTemplate)
   {
-    if (get_the_ID() != get_option('exposify_properties_page_id')) {
+    if (
+      get_the_ID() != get_option('exposify_overview_page_id') &&
+      get_the_ID() != get_option('exposify_property_page_id')
+    ) {
       return $oldTemplate;
     }
 
@@ -71,7 +74,10 @@ class ExposifyViewer {
   */
   public function changePageContent($oldContent)
   {
-    if (get_the_ID() != get_option('exposify_properties_page_id')) {
+    if (
+      get_the_ID() != get_option('exposify_overview_page_id') &&
+      get_the_ID() != get_option('exposify_property_page_id')
+    ) {
       return $oldContent;
     }
     $this->attemptRequest();
@@ -80,17 +86,19 @@ class ExposifyViewer {
   }
 
   /**
-  * Change the page title to the property name.
+  * Change the page title to the property name. We need to use the passed $pageId
+  * here instead of the get_the_ID() method because it would return the same ID
+  * for all titles. But we only want to change the main title of the detail page,
+  * not of the other menu items.
   *
   * @param  string  $oldTitle
   * @return string
   */
-  public function changePageTitle($oldTitle)
+  public function changePageTitle($oldTitle, $pageId)
   {
     if (
       !get_query_var('slug') ||
-      get_the_ID() != get_option('exposify_properties_page_id') ||
-      !in_the_loop()
+      $pageId != get_option('exposify_property_page_id')
     ) {
       return $oldTitle;
     }
@@ -123,7 +131,10 @@ class ExposifyViewer {
   */
   public function insertLinks()
   {
-    if (get_the_ID() != get_option('exposify_properties_page_id')) {
+    if (
+      get_the_ID() != get_option('exposify_overview_page_id') &&
+      get_the_ID() != get_option('exposify_property_page_id')
+    ) {
       return;
     }
 

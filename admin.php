@@ -160,9 +160,9 @@ function exposify_settings_updated($old_settings, $new_settings)
     in_array('exposify_site_slug',  $changed_settings)
   ) {
     wp_update_post([
-      'ID'         => get_option('exposify_properties_page_id'),
+      'ID'         => get_option('exposify_overview_page_id'),
       'post_title' => $new_settings['exposify_site_title'] ? $new_settings['exposify_site_title'] : 'Immobilien',
-      'post_name'  => $new_settings['exposify_site_slug'] ? $new_settings['exposify_site_slug'] : 'immobilien'
+      'post_name'  => $new_settings['exposify_site_slug']  ? $new_settings['exposify_site_slug']  : 'immobilien'
     ]);
   }
 
@@ -176,16 +176,22 @@ function exposify_settings_updated($old_settings, $new_settings)
  * Remove the properties page from the overview.
  * @param  WP_Query $query
  */
-function exposify_remove_page_from_overview($query)
+function exposify_remove_pages_from_admin_interfaces($query)
 {
   global $pagenow, $post_type;
 
+  // remove detail page from every possible place
+  $query->query_vars['post__not_in'] = [
+    get_option('exposify_property_page_id')
+  ];
+
+  // remove overview page only from wordpress page overview
   if ($pagenow == 'edit.php' && $post_type == 'page') {
-    $query->query_vars['post__not_in'] = [get_option('exposify_properties_page_id')];
+    $query->query_vars['post__not_in'][] = get_option('exposify_overview_page_id');
   }
 }
 
-add_action('parse_query', 'exposify_remove_page_from_overview');
+add_action('parse_query', 'exposify_remove_pages_from_admin_interfaces');
 add_action('admin_menu', 'exposify_add_options_page');
 add_action('admin_init', 'exposify_init_settings');
 add_action('update_option_exposify_settings', 'exposify_settings_updated', 10, 2);
