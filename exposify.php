@@ -4,7 +4,7 @@
 Plugin Name: Exposify
 Plugin URI: https://exposify.de
 Description: Zeigt alle eigenen Immobilienangebote von Exposify.
-Version: 1.6
+Version: 1.7
 Author: Exposify
 Author URI: https://exposify.de
 License: GPL2

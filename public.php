@@ -25,6 +25,8 @@ class ExposifyViewer {
     add_action('wp_enqueue_scripts',     [$this, 'insertLinks']);
     add_filter('the_title',              [$this, 'changePageTitle'], 10, 2);
     add_filter('pre_get_document_title', [$this, 'changeSiteTitle']);
+    // this is a YOAST frontend filter, it will only be applied if YOAST is installed
+    add_filter('wpseo_metadesc',         [$this, 'changeMetaDescription']);
   }
 
   /**
@@ -122,6 +124,21 @@ class ExposifyViewer {
     }
 
     return $oldTitle;
+  }
+
+  /**
+   * Change the meta description of the site if YOAST is installed.
+   *
+   * @param  string  $oldDescription
+   * @return string|bool
+   */
+  public function changeMetaDescription($oldDescription)
+  {
+    if ($description = $this->exposify->html->getDescription()) {
+      return $description;
+    }
+
+    return false;
   }
 
   /**
