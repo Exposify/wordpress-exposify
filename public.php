@@ -27,6 +27,8 @@ class ExposifyViewer {
     add_filter('pre_get_document_title', [$this, 'changeSiteTitle']);
     // this is a YOAST frontend filter, it will only be applied if YOAST is installed
     add_filter('wpseo_metadesc',         [$this, 'changeMetaDescription']);
+    // this is a wpSEO frontend filter, it will only be applied if wpSEO is installed
+    add_filter('wpseo_set_desc',         [$this, 'changeMetaDescription']);
   }
 
   /**
