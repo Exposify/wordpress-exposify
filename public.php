@@ -137,6 +137,7 @@ class ExposifyViewer {
   public function changeMetaDescription($oldDescription)
   {
     if ($description = $this->exposify->html->getDescription()) {
+      $this->attemptRequest();
       return $description;
     }
 
