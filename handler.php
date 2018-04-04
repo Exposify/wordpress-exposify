@@ -72,6 +72,8 @@ abstract class ApiBlueprint
 	public function requestAllProperties($searchQuery)
 	{
 		$url = $this->apiUrl . '?api_token=' . $this->apiKey . '&search=' . urlencode($searchQuery);
+		$url = $url . '&origin=' . urlencode($this->getRequestOriginUrl());
+
 		$this->requestData($url);
 	}
 
@@ -96,9 +98,13 @@ abstract class ApiBlueprint
 	 * @param  string  $slug
 	 * @return string
 	 */
-	protected function getRequestOriginUrl($slug)
+	protected function getRequestOriginUrl($slug = null)
 	{
-		$propertyPath = explode($slug, $_SERVER['REQUEST_URI'])[0];
+		if ($slug) {
+			$propertyPath = explode('/' . $slug, $_SERVER['REQUEST_URI'])[0];
+		} else {
+			$propertyPath = $_SERVER['REQUEST_URI'];
+		}
 		return (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $propertyPath;
 	}
 

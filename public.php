@@ -20,15 +20,19 @@ class ExposifyViewer {
   {
     $this->exposify = new Exposify($apiKey, $baseUrl);
 
-    add_filter('the_content',            [$this, 'changePageContent']);
-    add_filter('page_template',          [$this, 'changePageTemplate']);
-    add_action('wp_enqueue_scripts',     [$this, 'insertLinks']);
-    add_filter('the_title',              [$this, 'changePageTitle'], 10, 2);
-    add_filter('pre_get_document_title', [$this, 'changeSiteTitle']);
+    add_filter('the_content',             [$this, 'changePageContent']);
+    add_filter('page_template',           [$this, 'changePageTemplate']);
+    add_action('wp_enqueue_scripts',      [$this, 'insertLinks']);
+    add_filter('the_title',               [$this, 'changePageTitle'], 10, 2);
+    add_filter('pre_get_document_title',  [$this, 'changeSiteTitle']);
     // this is a YOAST frontend filter, it will only be applied if YOAST is installed
-    add_filter('wpseo_metadesc',         [$this, 'changeMetaDescription']);
+    add_filter('wpseo_metadesc',          [$this, 'changeMetaDescription']);
     // this is a wpSEO frontend filter, it will only be applied if wpSEO is installed
-    add_filter('wpseo_set_desc',         [$this, 'changeMetaDescription']);
+    add_filter('wpseo_set_desc',          [$this, 'changeMetaDescription']);
+    // this is where we insert new head resources for SSR
+    add_action('wp_head',                 [$this, 'insertSSRHead'], 9999);
+    // this is where we insert new head resources for SSR
+    add_action('wp_print_footer_scripts', [$this, 'insertSSRBody'], 9999);
   }
 
   /**
@@ -187,6 +191,32 @@ class ExposifyViewer {
         wp_enqueue_script('exposify-' . $i, $js_src, ['jquery'], false, true);
         $i++;
       }
+    }
+  }
+
+  /**
+   * Insert SRR Head End Resources if there are any.
+   *
+   * @return void
+   */
+  public function insertSSRHead()
+  {
+    $apiResponse = $this->exposify->html->getResult();
+    if (isset($apiResponse['attributes']['endHead'])) {
+      echo $apiResponse['attributes']['endHead'];
+    }
+  }
+
+  /**
+   * Insert SRR Body End Resources if there are any.
+   *
+   * @return void
+   */
+  public function insertSSRBody()
+  {
+    $apiResponse = $this->exposify->html->getResult();
+    if (isset($apiResponse['attributes']['endBody'])) {
+      echo $apiResponse['attributes']['endBody'];
     }
   }
 }
