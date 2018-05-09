@@ -1,6 +1,21 @@
 <?php
 
 /**
+ * Autoload all classes in the 'Settings' directory.
+ *
+ * @return void
+ */
+function autoloadSettingClasses()
+{
+  spl_autoload_register(function ($className) {
+    if (strpos($className, 'Exposify') === false) return;
+    $path = __DIR__ . '/Settings/' . $className . '.php';
+    if (!file_exists($path)) return;
+    require($path);
+  });
+}
+
+/**
  * Add an options page.
  *
  * @return void
@@ -17,55 +32,22 @@ function exposify_add_options_page()
  */
 function exposify_init_settings()
 {
-  register_setting('exposify_settings', 'exposify_settings', 'exposify_sanitize_settings');
+  // Register the setting which will be stored in the database.
+  //   'exposify' is both group and page (http://bit.ly/2FWfcHr)
+  //   'exposify_settings' is the database key
+  //   'exposify_sanitize_settings' is the callback to - drum-roll - sanitize the setting
+  register_setting('exposify', 'exposify_settings', 'exposify_sanitize_settings');
 
-  // register general section and fields
-  add_settings_section(
-    'exposify_general_section',
-    __('Allgemeines', 'exposify'),
-    null,
-    'exposify_settings'
-  );
+  // Register a general section.
+  $generalSection = new ExposifyGeneralSection($page = 'exposify');
+  $generalSection->addField(new ExposifyApiKeyField());
+  $generalSection->addField(new ExposifySiteTitleField());
+  $generalSection->addField(new ExposifySiteSlugField());
+  $generalSection->register();
 
-  add_settings_field(
-    'exposify_api_key',
-    __('Dein API Schlüssel für Exposify*', 'exposify'),
-    'exposify_api_key_render',
-    'exposify_settings',
-    'exposify_general_section'
-  );
-
-  add_settings_field(
-    'exposify_site_title',
-    __('Der angezeigte Titel für die Immobilienübersicht', 'exposify'),
-    'exposify_site_title_render',
-    'exposify_settings',
-    'exposify_general_section'
-  );
-
-  add_settings_field(
-    'exposify_site_slug',
-    __('Der Slug für die Immobilienübersicht', 'exposify'),
-    'exposify_site_slug_render',
-    'exposify_settings',
-    'exposify_general_section'
-  );
-
-  // register visual section and fields
-  add_settings_section(
-    'exposify_visual_section',
-    __('Darstellung', 'exposify'),
-    null,
-    'exposify_settings'
-  );
-
-  add_settings_field(
-    'exposify_theme_template',
-    __('Page Template für die Anzeige der Immobilien', 'exposify'),
-    'exposify_theme_template_render',
-    'exposify_settings',
-    'exposify_visual_section'
-  );
+  $generalSection = new ExposifyVisualSection($page = 'exposify');
+  $generalSection->addField(new ExposifyThemeTemplateField());
+  $generalSection->register();
 }
 
 /**
@@ -85,65 +67,6 @@ function exposify_sanitize_settings($option)
 }
 
 /**
- * Display the field.
- *
- * @return void
- */
-function exposify_api_key_render()
-{
-  $options = get_option('exposify_settings');
-  ?>
-  <input class="regular-text" type="text" name="exposify_settings[exposify_api_key]" value="<?php echo $options['exposify_api_key']; ?>" placeholder="z.B. e7081hfnjhdf987341r8rq98exir8x73084rzneh">
-  <?php
-}
-
-/**
- * Display the field.
- *
- * @return void
- */
-function exposify_site_title_render()
-{
-  $options = get_option('exposify_settings');
-  ?>
-  <input class="regular-text" type="text" name="exposify_settings[exposify_site_title]" value="<?php echo $options['exposify_site_title']; ?>" placeholder="z.B. Immobilien">
-  <?php
-}
-
-/**
- * Display the field.
- *
- * @return void
- */
-function exposify_site_slug_render()
-{
-  $options = get_option('exposify_settings');
-  ?>
-  <input class="regular-text" type="text" name="exposify_settings[exposify_site_slug]" value="<?php echo $options['exposify_site_slug']; ?>" placeholder="z.B. immobilien">
-  <?php
-}
-
-/**
- * Display the field.
- *
- * @return void
- */
-function exposify_theme_template_render()
-{
-  $options = get_option('exposify_settings');
-  ?>
-  <select name="exposify_settings[exposify_theme_template]">
-    <?php
-    echo '<option value="default" ' . ($options['exposify_theme_template'] == 'default' ? 'selected' : '') . '>Default</option>';
-    foreach(wp_get_theme()->get_page_templates() as $path => $name) {
-      echo '<option value="' . $path . '" ' . ($options['exposify_theme_template'] == $path ? 'selected' : '') . '>' . $name . '</option>';
-    }
-    ?>
-  </select>
-  <?php
-}
-
-/**
  * Display the options page.
  *
  * @return void
@@ -154,8 +77,8 @@ function exposify_settings_page()
   <form action="options.php" method="post">
     <h2>Exposify</h2>
     <?php
-    settings_fields('exposify_settings');
-    do_settings_sections('exposify_settings');
+    echo_settings_form_meta_fields('exposify');
+    echo_settings_form_sections('exposify');
     submit_button();
     ?>
   </form>
@@ -210,6 +133,8 @@ function exposify_remove_pages_from_admin_interfaces($query)
   }
 }
 
+require(__DIR__ . '/settings_wrapper.php');
+autoloadSettingClasses();
 add_action('parse_query', 'exposify_remove_pages_from_admin_interfaces');
 add_action('admin_menu', 'exposify_add_options_page');
 add_action('admin_init', 'exposify_init_settings');
