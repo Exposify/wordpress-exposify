@@ -43,6 +43,7 @@ function exposify_init_settings()
   $generalSection->addField(new ExposifyApiKeyField());
   $generalSection->addField(new ExposifySiteTitleField());
   $generalSection->addField(new ExposifySiteSlugField());
+  $generalSection->addField(new ExposifyCustomTypesField());
   $generalSection->register();
 
   $generalSection = new ExposifyVisualSection($page = 'exposify');
@@ -58,12 +59,49 @@ function exposify_init_settings()
  */
 function exposify_sanitize_settings($option)
 {
+  $originalOption = get_option('exposify_settings');
+
+  if (!exposify_json_is_valid($option['exposify_custom_types'])) {
+    add_settings_error(
+      'exposify_settings',
+      esc_attr( 'exposify_json_invalid' ),
+      'Die übergebenen Objekttypen in JSON waren ungültig.',
+      'error'
+    );
+    return $originalOption;
+  }
+
   $option['exposify_api_key']        = sanitize_text_field($option['exposify_api_key']);
   $option['exposify_site_title']     = sanitize_text_field($option['exposify_site_title']);
   $option['exposify_site_slug']      = sanitize_text_field($option['exposify_site_slug']);
+  $option['exposify_custom_types']   = exposify_decode_custom_types($option['exposify_custom_types']);
   $option['exposify_theme_template'] = sanitize_text_field($option['exposify_theme_template']);
 
   return $option;
+}
+
+/**
+ * Validate the given JSON input.
+ *
+ * @param  string  $data
+ * @return void
+ */
+function exposify_json_is_valid($data)
+{
+  @json_decode($data, true);
+
+  return json_last_error() === JSON_ERROR_NONE;
+}
+
+/**
+ * Get the custom types to store in the database.
+ *
+ * @param  string  $data
+ * @return void
+ */
+function exposify_decode_custom_types($data)
+{
+  return json_decode($data, true);
 }
 
 /**
