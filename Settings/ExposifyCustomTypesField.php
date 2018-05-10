@@ -31,11 +31,29 @@ class ExposifyCustomTypesField extends ExposifyField
   {
     $options = get_option('exposify_settings');
 
-    ?>
-    <textarea class="code" name="exposify_settings[exposify_custom_types]" cols="40" rows="10"><?php
+    ?><textarea class="code" name="exposify_settings[exposify_custom_types]" cols="40" rows="10"><?php
       echo json_encode($options['exposify_custom_types'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     ?></textarea>
-    <div style="font-size: .9em;">JSON im Format {"foo": ["bar", 1, null]}</div>
-    <?php
+    <div style="font-size: .9em;">JSON im Format</div>
+    <pre style="font-size: .9em;"><?php
+      echo $this->getExample();
+    ?></pre><?php
+  }
+
+  /**
+   * Get a JSON string as example.
+   *
+   * @return string
+   */
+  protected function getExample()
+  {
+    return json_encode([
+      [
+        'title'     => 'Titel des Typs',
+        'slug'      => 'Slug des Typs',
+        'types'     => 'Liste der Exposify Typen',
+        'marketing' => 'Liste der Vermarktungen'
+      ]
+    ], JSON_PRETTY_PRINT);
   }
 }

@@ -45,9 +45,14 @@ function exposify_deactivate_plugin()
 function exposify_rewrite()
 {
   $options = get_option('exposify_settings');
-  $slug = $options['exposify_site_slug'] ? $options['exposify_site_slug'] : 'immobilien';
-  add_rewrite_rule('^' . $slug . '/(.+)/?$', 'index.php?page_id=' . get_option('exposify_property_page_id') . '&slug=$matches[1]', 'top');
+  $siteSlug = $options['exposify_site_slug'] ? $options['exposify_site_slug'] : 'immobilien';
+  add_rewrite_rule(
+    '^' . $siteSlug . '/([\w\d]+)/?\??(.+)?$',
+    'index.php?page_id=' . get_option('exposify_property_page_id') . '&slug=$matches[1]&$matches[2]',
+    'top'
+  );
   add_rewrite_tag('%slug%', '([^&]+)');
+  add_rewrite_tag('%type%', '([^&]+)');
   add_rewrite_rule('^exposify-detail$', 'index.php?error=404', 'top');
 }
 

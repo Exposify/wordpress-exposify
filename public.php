@@ -1,5 +1,75 @@
 <?php
 
+class CustomType {
+  /**
+   * Construct the type.
+   *
+   * @param  string  $customType
+   * @return void
+   */
+  public function __construct($customType)
+  {
+    $this->query = $customType;
+    $this->config = get_option('exposify_settings')['exposify_custom_types'];
+  }
+
+  /**
+   * Try to retrieve the config for the type based on its slug or name.
+   *
+   * @return array|null
+   */
+  protected function getCustomTypeConfig()
+  {
+    foreach ($this->config as $customType) {
+      if (isset($customType['slug']) && $customType['slug'] == $this->query) {
+        return $customType;
+      }
+      if (isset($customType['title']) && $customType['title'] == $this->query) {
+        return $customType;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Return the Exposify types of this custom types. Returns null if the
+   * type doesn't exist.
+   *
+   * @return array|null
+   */
+  public function getExposifyTypes()
+  {
+    if (($config = $this->getCustomTypeConfig()) && isset($config['types'])) {
+      return $config['types'];
+    }
+    return [];
+  }
+
+  /**
+   * Return the Exposify marketing of this custom types. Returns null if the
+   * type doesn't exist.
+   *
+   * @return array|null
+   */
+  public function getExposifyMarketing()
+  {
+    if (($config = $this->getCustomTypeConfig()) && isset($config['marketing'])) {
+      return $config['marketing'];
+    }
+    return [];
+  }
+
+  /**
+   * Returns whether the type exists.
+   *
+   * @return bool
+   */
+  public function exists()
+  {
+    return (bool) $this->getCustomTypeConfig();
+  }
+}
+
 class ExposifyViewer {
 
   /**
@@ -42,13 +112,27 @@ class ExposifyViewer {
   */
   public function attemptRequest()
   {
-    if (empty($this->exposify->html->getResult())) {
-      if (get_query_var('slug')) {
-        $this->exposify->html->requestSingleProperty(get_query_var('slug'));
-      } else {
-        $this->exposify->html->requestAllProperties(get_query_var('search', ''));
-      }
+    if (!empty($this->exposify->html->getResult())) {
+      return;
     }
+
+    if (get_query_var('slug')) {
+      $this->exposify->html->requestSingleProperty(get_query_var('slug'));
+      return;
+    }
+
+    $type = new CustomType(get_query_var('type'));
+
+    if (!$type->exists()) {
+      $this->exposify->html->requestAllProperties(get_query_var('search', ''));
+      return;
+    }
+
+    $this->exposify->html->requestAllProperties(
+      get_query_var('search', ''),
+      $type->getExposifyTypes(),
+      $type->getExposifyMarketing()
+    );
   }
 
   /**
