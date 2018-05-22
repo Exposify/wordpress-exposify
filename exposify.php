@@ -47,8 +47,8 @@ function exposify_rewrite()
   $options = get_option('exposify_settings');
   $siteSlug = $options['exposify_site_slug'] ? $options['exposify_site_slug'] : 'immobilien';
   add_rewrite_rule(
-    '^' . $siteSlug . '/([\w\d]+)/?\??(.+)?$',
-    'index.php?page_id=' . get_option('exposify_property_page_id') . '&slug=$matches[1]&$matches[2]',
+    '^' . $siteSlug . '/(.+)/?$',
+    'index.php?page_id=' . get_option('exposify_property_page_id') . '&slug=$matches[1]',
     'top'
   );
   add_rewrite_tag('%slug%', '([^&]+)');
