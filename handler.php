@@ -71,7 +71,7 @@ abstract class ApiBlueprint
 	 * @param  array  $marketing
 	 * @return void
 	 */
-	public function requestAllProperties(string $searchQuery = '', array $types = [], array $marketing = [])
+	public function requestAllProperties($searchQuery = '', $types = [], $marketing = [])
 	{
 		$url = $this->apiUrl . '?api_token=' . $this->apiKey;
 		$url = $url . '&search=' . urlencode($searchQuery);
