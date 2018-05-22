@@ -214,6 +214,6 @@ class Exposify extends ApiBlueprint
 	{
 		$this->apiUrl = $apiBaseUrl . '/api/v1/json';
 		$this->apiKey = $apiKey;
-		$this->html   = new HtmlHandler($apiBaseUrl . '/api/v1/html', $apiKey);
+		$this->html   = new HtmlHandler('https://sites.exposify.de', $apiKey);
 	}
 }
