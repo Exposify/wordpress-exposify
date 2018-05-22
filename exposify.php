@@ -4,7 +4,7 @@
 Plugin Name: Exposify
 Plugin URI: https://exposify.de
 Description: Zeigt alle eigenen Immobilienangebote von Exposify.
-Version: 1.10.0
+Version: 1.10.1
 Author: Exposify
 Author URI: https://exposify.de
 License: GPL2
@@ -47,7 +47,7 @@ function exposify_rewrite()
   $options = get_option('exposify_settings');
   $siteSlug = $options['exposify_site_slug'] ? $options['exposify_site_slug'] : 'immobilien';
   add_rewrite_rule(
-    '^' . $siteSlug . '/([\w\d]+)/?\??(.+)?$',
+    '^' . $siteSlug . '/([\w\d-]+)/?(?:\?(.+))?$',
     'index.php?page_id=' . get_option('exposify_property_page_id') . '&slug=$matches[1]&$matches[2]',
     'top'
   );
