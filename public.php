@@ -190,16 +190,19 @@ class ExposifyViewer {
   */
   public function changePageTitle($oldTitle, $pageId)
   {
-    if (
-      !get_query_var('slug') ||
-      $pageId != get_option('exposify_property_page_id')
-    ) {
-      return $oldTitle;
+    // Return the dynamic Exposify title for the detail page.
+    if ($pageId == get_option('exposify_property_page_id')) {
+      $this->attemptRequest();
+      return '<span class="xpfy-title">' . $this->exposify->html->getTitle() . '</span>';
     }
 
-    $this->attemptRequest();
+    // Return the generic Exposify title for the overview page.
+    if ($pageId == get_option('exposify_overview_page_id')) {
+      return '<span class="xpfy-title">' . $oldTitle . '</span>';
+    }
 
-    return $this->exposify->html->getTitle();
+    // Return the old title.
+    return $oldTitle;
   }
 
   /**
@@ -294,16 +297,28 @@ class ExposifyViewer {
   }
 
   /**
-   * Insert SRR Body End Resources if there are any.
+   * Insert SRR Body End Resources if there are any. Add a snippet to
+   * dynamically change the page title.
    *
    * @return void
    */
   public function insertSSRBody()
   {
     $apiResponse = $this->exposify->html->getResult();
+
     if (isset($apiResponse['attributes']['endBody'])) {
       echo $apiResponse['attributes']['endBody'];
     }
+
+    echo <<<'EOT'
+      <script>
+        xpfyEl = document.querySelector('#xpfy');
+        titleEl = document.querySelector('h1 > .xpfy-title, h2 > .xpfy-title, h3 > .xpfy-title');
+        xpfyEl.addEventListener('titleChange', function(e) {
+          titleEl.innerHTML = e.detail.newTitle;
+        });
+      </script>
+EOT;
   }
 }
 
